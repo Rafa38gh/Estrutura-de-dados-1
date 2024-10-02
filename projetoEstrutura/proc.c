@@ -47,6 +47,11 @@ int main()
     }
 
     ImprimeFila(f);
+
+    Nos* noRemov = RetiraFila(f);
+
+    ImprimeFila(f);
+
     LiberaFila(f);
 
     return 0;

@@ -11,7 +11,7 @@
 
     void ImprimeFila(Fila* f)   ........................    Imprime a fila completa
 
-    Fila* LiberaFila(Fila* f)   ........................    Libera os espaços de memória alocados para a fila     
+    Fila* LiberaFila(Fila* f)   ........................    Libera os espaços de memória alocados para a fila
 
 */
 
@@ -55,7 +55,7 @@ Fila* CriaFila()
 Nos* InsereFim(Nos* fim, char codigo[], int valor, Tempo* horario)
 {
     Nos* p = (Nos*) malloc(sizeof(Nos));
-    
+
     for(int i = 0; i <= 4; i++)
     {
         p->codigo[i] = codigo[i];
@@ -87,10 +87,40 @@ void InsereFila(Fila* f, char codigo[], int valor, Tempo* horario)
     }
 }
 
+Nos* RetiraInicio(Nos* ini)
+{
+    Nos* p = ini->prox;
+    free(ini);
+
+    return p;
+}
+
+Nos* RetiraFila(Fila* f)
+{
+    Nos* v;
+
+    if(VaziaFila(f))
+    {
+        printf("\n\t ERRO: Fila vazia");
+        exit(0);
+    }
+
+    v = f->ini;
+
+    f->ini = RetiraInicio(f->ini);
+
+    if(f->ini == NULL)
+    {
+        f->fim = NULL;
+    }
+
+    return v;
+}
+
 void ImprimeFila(Fila* f)
 {
     Nos* aux;
-    
+
     printf("\n\n");
 
     for(aux = f->ini; aux != NULL; aux = aux->prox)
