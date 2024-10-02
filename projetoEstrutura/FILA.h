@@ -1,6 +1,20 @@
 #ifndef FILA_H_INCLUDED
 #define FILA_H_INCLUDED
 
+/*  BIBLIOTECA DE FILAS
+
+    int VaziaFila(Fila* f)  ........................    Verifica se a fila está vazia, retorna 1 caso sim e 0 caso não
+
+    Fila* CriaFila()        ........................    Cria uma nova fila e a retorna
+
+    void InsereFila(Fila* f, char codigo[], int valor, Tempo* horario)  ........................    Insere os dados na fila
+
+    void ImprimeFila(Fila* f)   ........................    Imprime a fila completa
+
+    Fila* LiberaFila(Fila* f)   ........................    Libera os espaços de memória alocados para a fila     
+
+*/
+
 typedef struct tempo
 {
     int hora;
