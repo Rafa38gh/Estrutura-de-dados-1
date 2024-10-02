@@ -1,58 +1,44 @@
-#include<stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <locale.h>
 #include "FILA.h"
 
 int main()
 {
-    int num;
+    system("cls");
+    setlocale(LC_ALL, "Portuguese");
+
+    // Seed
+    int seed;
+
+    // Horario global
+    Tempo *horarioGlobal;
+    int horaGlobal, minutoGlobal;
 
     // Dados do vôo
-    char codigo[5];
+    char codigo[4];
     int numPass;
-    Tempo* horario;
+    Tempo *horario;
 
     // Variáveis para inserção do horario
     int hora, minutos;
 
+    //=================================================================================
+    // Inserção da seed
+    printf("\n\n\t INSIRA O VALOR DA SEED: ");
+    scanf("%d", &seed);
+    srand(seed);
 
-    Fila* f = CriaFila();
+    //=================================================================================
+    // Inserção do horário global
+    horaGlobal = rand() % 23;
+    minutoGlobal = rand() % 59;
 
-    system("cls");
+    horarioGlobal->hora = horaGlobal;
+    horarioGlobal->minutos = minutoGlobal;
 
-    printf("\n Digite a quantidade de dados que deseja inserir: ");
-    scanf("%d", &num);
-
-
-    // Inserção de dados
-    for(int i = 0; i < num; i++)
-    {
-        printf("\n Insira o codigo do voo: ");
-        scanf("%4s", codigo);
-
-        printf("\n\t Insira o numero de passageiros: ");
-        scanf("%d", &numPass);
-
-        printf("\n\t Insira a hora do voo: ");
-        scanf("%d", &hora);
-
-        printf("\n\t Insira os minutos do voo: ");
-        scanf("%d", &minutos);
-
-        // Mesclando os dados do tempo
-        horario = (Tempo*) malloc(sizeof(Tempo));
-        horario->hora = hora;
-        horario->minutos = minutos;
-
-        InsereFila(f, codigo, numPass, horario);
-        free(horario);
-    }
-
-    ImprimeFila(f);
-
-    Nos* noRemov = RetiraFila(f);
-
-    ImprimeFila(f);
-
-    LiberaFila(f);
+    printf("\n HORA ATUAL %d:%d", horaGlobal, minutoGlobal);
 
     return 0;
 }
