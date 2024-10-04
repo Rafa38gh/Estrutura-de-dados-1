@@ -3,15 +3,17 @@
 
 /*  BIBLIOTECA DE FILAS
 
-    int VaziaFila(Fila* f)  ........................    Verifica se a fila está vazia, retorna 1 caso sim e 0 caso não
+    int VaziaFila(Fila *f)  ........................    Verifica se a fila está vazia, retorna 1 caso sim e 0 caso não
 
-    Fila* CriaFila()        ........................    Cria uma nova fila e a retorna
+    Fila *CriaFila()        ........................    Cria uma nova fila e a retorna
 
     void InsereFila(Fila* f, char codigo[], int valor, Tempo* horario)  ........................    Insere os dados na fila
 
+    Nos *RetiraFila(Fila *f)    ........................    Retira o primeiro nó da fila e retorna
+
     void ImprimeFila(Fila* f)   ........................    Imprime a fila completa
 
-    Fila* LiberaFila(Fila* f)   ........................    Libera os espaços de memória alocados para a fila
+    Fila *LiberaFila(Fila* f)   ........................    Libera os espaços de memória alocados para a fila
 
 */
 
@@ -23,7 +25,7 @@ typedef struct tempo
 
 typedef struct nos
 {
-    char codigo[5];
+    char codigo[4];
     int numPass;
     Tempo* horario;
     struct nos* prox;
@@ -125,9 +127,9 @@ void ImprimeFila(Fila* f)
 
     for(aux = f->ini; aux != NULL; aux = aux->prox)
     {
-        printf("\t\t%s", aux->codigo);
+        printf("\t\t%.4s", aux->codigo);
         printf("\t\t%d", aux->numPass);
-        printf("\t\t Horario de chegada %d : %d", aux->horario->hora, aux->horario->minutos);
+        printf("\t\t Horario de chegada %d:%d", aux->horario->hora, aux->horario->minutos);
     }
 
 }
