@@ -53,7 +53,7 @@ int main()
     // Menu principal
     do
     {
-        printf("\n\t\t == MENU PRINCIPAL ==");
+        printf("\n\n\t\t == MENU PRINCIPAL ==");
         printf("\n\n\t 1. Cadastrar novo voo");
         printf("\n\t 2. Imprimir lista de pouso");
         printf("\n\t 3. Sair do programa");
@@ -64,11 +64,11 @@ int main()
         switch(input)
         {
             case 1:
-                CadastrarVoo(f, horarioGlobal);
+                CadastrarVoo(f, e, horarioGlobal);
                 break;
             
             case 2:
-                ImprimeFila(f);
+                ImprimeFila(f, e);
                 break;
                 
             case 3:
@@ -85,7 +85,7 @@ int main()
     return 0;
 }
 
-void CadastrarVoo(Fila *f, Tempo *horarioGlobal)
+void CadastrarVoo(Fila *f, Fila *e, Tempo *horarioGlobal)
 {
     // Dados do vôo
     char codigo[4];
@@ -94,6 +94,9 @@ void CadastrarVoo(Fila *f, Tempo *horarioGlobal)
 
     // Input do usuário
     char input = 0;
+
+    // Chance de vôo emergencial
+    int emergencia = 0;
 
     system("cls");
     printf("\n CADASTRO DE VOOS");
@@ -111,12 +114,21 @@ void CadastrarVoo(Fila *f, Tempo *horarioGlobal)
         horario->minutos = rand() % 59;
 
         if(horario == NULL)       // Verifica se foi possível alocar memória para o horário
-    {
-        printf("\n\t\t ERRO: Falha ao alocar memoria para o horario do voo");
-        exit(0);
-    }
+        {
+            printf("\n\t\t ERRO: Falha ao alocar memoria para o horario do voo");
+            exit(0);
+        }
 
-        InsereFila(f, codigo, numPass, horario);
+        emergencia = rand() % 100;      // Define 20% de chance do vôo ser emergencial
+
+        if(emergencia > 20)
+        {
+            InsereFila(f, codigo, numPass, horario);
+
+        } else
+        {
+            InsereFila(e, codigo, numPass, horario);
+        }
 
         fflush(stdin);
         printf("\n\n\t\t Deseja cadastrar um novo voo? (S/N): ");
