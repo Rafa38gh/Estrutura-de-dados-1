@@ -27,6 +27,7 @@ int main()
     // Filas principais
     Fila *f = CriaFila();       // Fila principal de pouso
     Fila *e = CriaFila();       // Fila de pousos de emergência
+    Fila *p = CriaFila();       // Fila de aviões que pousaram
 
     //=================================================================================
     // Inserção da seed
@@ -55,8 +56,9 @@ int main()
     {
         printf("\n\n\t\t == MENU PRINCIPAL ==");
         printf("\n\n\t 1. Cadastrar novo voo");
-        printf("\n\t 2. Imprimir lista de pouso");
-        printf("\n\t 3. Sair do programa");
+        printf("\n\t 2. Autorizar pouso");
+        printf("\n\t 3. Imprimir lista de pouso");
+        printf("\n\t 4. Sair do programa");
 
         printf("\n\n Escolha uma das opcoes acima: ");
         scanf("%d", &input);
@@ -66,21 +68,25 @@ int main()
             case 1:
                 CadastrarVoo(f, e, horarioGlobal);
                 break;
-            
+
             case 2:
-                ImprimeFila(f, e);
+                AutorizarPouso(f, e, p, horarioGlobal);
                 break;
-                
+
             case 3:
+                ImprimeFila(f, e, 0);
+                break;
+
+            case 4:
                 printf("\n\n\t\t Encerrando programa...");
                 break;
-                
+
             default:
                 printf("\n\n\t\t ERRO: Comando invalido inserido...");
                 break;
         }
-    } while (input != 3);
-    
+    } while (input != 4);
+
 
     return 0;
 }
@@ -119,15 +125,15 @@ void CadastrarVoo(Fila *f, Fila *e, Tempo *horarioGlobal)
             exit(0);
         }
 
-        emergencia = rand() % 100;      // Define 20% de chance do vôo ser emergencial
+        emergencia = rand() % 100;      // Haverá 20% de chance do vôo ser emergencial
 
         if(emergencia > 20)
         {
-            InsereFila(f, codigo, numPass, horario);
+            InsereFila(f, codigo, numPass, horario, 0);
 
         } else
         {
-            InsereFila(e, codigo, numPass, horario);
+            InsereFila(e, codigo, numPass, horario, -1);
         }
 
         fflush(stdin);
@@ -137,4 +143,40 @@ void CadastrarVoo(Fila *f, Fila *e, Tempo *horarioGlobal)
         input = toupper(input);
 
     } while (input == 'S');
+}
+
+void AutorizarPouso(Fila *f, Fila *e, Fila *p, Tempo *horarioGlobal)
+{
+    system("cls");
+    Nos *aux = f->ini;
+    Nos *aux2 = e->ini;
+    Nos *aux3;
+
+    // Imprime os próximos 3 vôos a serem autorizados
+    printf("\n == PROXIMOS POUSOS ==")
+    for(int i = 0; i < 3; i++)
+    {
+        // Verifica se há pousos de emergência
+        if(!VaziaFila(e)&& aux2 != NULL)
+        {
+            ImprimeNo(aux2);
+            aux2 = aux2->prox;
+
+        } else if(!VaziaFila(f) && aux != NULL)
+        {
+            ImprimeNo(aux);
+            aux = aux->prox;
+        }
+    }
+
+    // Autorizando pouso
+    if(!VaziaFila(e))
+    {
+        aux3 = RetiraFila(e);
+
+    } else if(!VaziaFila(f))
+    {
+        aux3 = RetiraFila(f);
+    }
+    InsereFila(p, aux3->codigo, aux3->numPass, aux3->horario);
 }

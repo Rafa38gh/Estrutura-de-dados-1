@@ -11,7 +11,7 @@
 
     Nos *RetiraFila(Fila *f)    ........................    Retira o primeiro nó da fila e retorna
 
-    void ImprimeFila(Fila* f)   ........................    Imprime a fila completa
+    void ImprimeFila(Fila* f, Fila *e, int status)   ........................    Imprime a fila completa, status define a impresão do checkHora
 
     Fila *LiberaFila(Fila* f)   ........................    Libera os espaços de memória alocados para a fila
 
@@ -28,6 +28,7 @@ typedef struct nos
     char codigo[4];
     int numPass;
     Tempo* horario;
+    int checkHora;
     struct nos* prox;
 } Nos;
 
@@ -54,7 +55,7 @@ Fila* CriaFila()
     return f;
 }
 
-Nos* InsereFim(Nos* fim, char codigo[], int valor, Tempo* horario)
+Nos* InsereFim(Nos* fim, char codigo[], int valor, Tempo* horario, int checkHora)
 {
     Nos* p = (Nos*) malloc(sizeof(Nos));
 
@@ -69,6 +70,7 @@ Nos* InsereFim(Nos* fim, char codigo[], int valor, Tempo* horario)
 
     p->horario->hora = horario->hora;
     p->horario->minutos = horario->minutos;
+    p->checkHora = checkHora;        // checkHora é inicializado como NULL por padrão
     p->prox = NULL;
 
     if(fim != NULL)
@@ -79,9 +81,9 @@ Nos* InsereFim(Nos* fim, char codigo[], int valor, Tempo* horario)
     return p;
 }
 
-void InsereFila(Fila* f, char codigo[], int valor, Tempo* horario)
+void InsereFila(Fila* f, char codigo[], int valor, Tempo* horario, int checkHora)
 {
-    f->fim = InsereFim(f->fim, codigo, valor, horario);
+    f->fim = InsereFim(f->fim, codigo, valor, horario, checkHora);
 
     if(f->ini == NULL)
     {
@@ -119,7 +121,7 @@ Nos* RetiraFila(Fila* f)
     return v;
 }
 
-void ImprimeFila(Fila *f, Fila *e)
+void ImprimeFila(Fila *f, Fila *e, int status)
 {
     Nos* aux;
     system("cls");
@@ -136,6 +138,11 @@ void ImprimeFila(Fila *f, Fila *e)
             printf("\n\t Voo: %.4s", aux->codigo);
             printf("\n\t\t Numero de passageiros: %d", aux->numPass);
             printf("\n\t\t Horario de chegada %.2d:%.2d", aux->horario->hora, aux->horario->minutos);
+
+            if(status == 1)
+            {
+                printf("\n\t\t Status de pouso: %d", aux->checkHora);
+            }
         }
     }
 
@@ -152,9 +159,21 @@ void ImprimeFila(Fila *f, Fila *e)
             printf("\n\t Voo: %.4s", aux->codigo);
             printf("\n\t\t Numero de passageiros: %d", aux->numPass);
             printf("\n\t\t Horario de chegada %.2d:%.2d", aux->horario->hora, aux->horario->minutos);
+
+            if(status == 1)
+            {
+                printf("\n\t\t Status de pouso: %d", aux->checkHora);
+            }
         }
     }
 
+}
+
+void ImprimeNo(Nos *n)
+{
+    printf("\n\t Voo: %.4s", n->codigo);
+    printf("\n\t\t Numero de passageiros: %d", n->numPass);
+    printf("\n\t\t Status do voo: %d", n->checkHora);
 }
 
 Fila* LiberaFila(Fila* f)
