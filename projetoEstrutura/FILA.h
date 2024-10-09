@@ -121,21 +121,18 @@ Nos* RetiraFila(Fila* f)
     return v;
 }
 
-void ImprimeFila(Fila *f, Fila *e, int status)
+void ImprimeFila(Fila *f, int status)
 {
     Nos* aux;
-    system("cls");
     if(VaziaFila(f))
     {
         printf("\n\n\t\t ERRO: Fila Vazia");
 
     } else
     {
-        printf("\n\n == FILA PRINCIPAL ==");
-
         for(aux = f->ini; aux != NULL; aux = aux->prox)
         {
-            printf("\n\t Voo: %.4s", aux->codigo);
+            printf("\n\t Voo: %s", aux->codigo);
             printf("\n\t\t Numero de passageiros: %d", aux->numPass);
             printf("\n\t\t Horario de chegada %.2d:%.2d", aux->horario->hora, aux->horario->minutos);
 
@@ -145,28 +142,6 @@ void ImprimeFila(Fila *f, Fila *e, int status)
             }
         }
     }
-
-    if(VaziaFila(e))
-    {
-        printf("\n\n\t\t ERRO: Fila Vazia");
-
-    } else
-    {
-        printf("\n\n == FILA DE EMERGENCIA ==");
-
-        for(aux = e->ini; aux != NULL; aux = aux->prox)
-        {
-            printf("\n\t Voo: %.4s", aux->codigo);
-            printf("\n\t\t Numero de passageiros: %d", aux->numPass);
-            printf("\n\t\t Horario de chegada %.2d:%.2d", aux->horario->hora, aux->horario->minutos);
-
-            if(status == 1)
-            {
-                printf("\n\t\t Status de pouso: %d", aux->checkHora);
-            }
-        }
-    }
-
 }
 
 void ImprimeNo(Nos *n)
