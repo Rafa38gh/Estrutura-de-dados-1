@@ -59,20 +59,33 @@ Nos* InsereFim(Nos* fim, char codigo[], int valor, Tempo* horario, int checkHora
 {
     Nos* p = (Nos*) malloc(sizeof(Nos));
 
-    for(int i = 0; i <= 4; i++)
+    // Verifica se há espaço na memória
+    if(p == NULL)
+    {
+        printf("\nERRO: Espaço de memória insuficiente...");
+        exit(1);
+    }
+
+    for(int i = 0; i < 4; i++)
     {
         p->codigo[i] = codigo[i];
     }
+    p->codigo[4] = '\0';
 
     p->numPass = valor;
 
     p->horario = (Tempo*) malloc(sizeof(Tempo));
-
+    if(p->horario == NULL)
+    {
+        printf("\nERRO: Espaço de memória insuficiente...");
+        exit(1);
+    }
     p->horario->hora = horario->hora;
     p->horario->minutos = horario->minutos;
+
+    
     p->checkHora = checkHora;        // checkHora é inicializado como NULL por padrão
     p->prox = NULL;
-
     if(fim != NULL)
     {
         fim->prox = p;
@@ -99,26 +112,20 @@ Nos* RetiraInicio(Nos* ini)
     return p;
 }
 
-Nos* RetiraFila(Fila* f)
+void RetiraFila(Fila* f)
 {
-    Nos* v;
-
     if(VaziaFila(f))
     {
         printf("\n\t ERRO: Fila vazia");
         exit(0);
     }
-
-    v = f->ini;
-
+    
     f->ini = RetiraInicio(f->ini);
 
     if(f->ini == NULL)
     {
         f->fim = NULL;
     }
-
-    return v;
 }
 
 void ImprimeFila(Fila *f, int status)
@@ -132,7 +139,7 @@ void ImprimeFila(Fila *f, int status)
     {
         for(aux = f->ini; aux != NULL; aux = aux->prox)
         {
-            printf("\n\t Voo: %s", aux->codigo);
+            printf("\n\t Voo: %.4s", aux->codigo);
             printf("\n\t\t Numero de passageiros: %d", aux->numPass);
             printf("\n\t\t Horario de chegada %.2d:%.2d", aux->horario->hora, aux->horario->minutos);
 
@@ -169,3 +176,4 @@ Fila* LiberaFila(Fila* f)
 }
 
 #endif // FILA_H_INCLUDED
+

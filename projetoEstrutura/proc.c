@@ -5,107 +5,21 @@
 #include <locale.h>
 #include "FILA.h"
 
-int main()
-{
-    system("cls");
-    setlocale(LC_ALL, "Portuguese");
-
-    // Input do usuário no menu;
-    int input = 0;
-
-    // Seed
-    int seed;
-
-    // Horario global
-    Tempo *horarioGlobal;
-    int horaGlobal, minutoGlobal;
-
-    //=================================================================================
-    // Filas principais
-    Fila *f = CriaFila();       // Fila principal de pouso
-    Fila *e = CriaFila();       // Fila de pousos de emergência
-    Fila *u = CriaFila();       // Fila de aviões que pousaram
-
-    //=================================================================================
-    // Inserção da seed
-    printf("\n\n\t INSIRA O VALOR DA SEED: ");
-    scanf("%d", &seed);
-    srand(seed);
-
-    //=================================================================================
-    // Inserção do horário global
-    horarioGlobal = (Tempo*) malloc(sizeof(Tempo*));
-    horaGlobal = rand() % 23;
-    minutoGlobal = rand() % 59;
-
-    if(horarioGlobal == NULL)       // Verifica se foi possível alocar memória para o horário
-    {
-        printf("\n\t\t ERRO: Falha ao alocar memoria para o horario global");
-        exit(0);
-    }
-
-    horarioGlobal->hora = horaGlobal;
-    horarioGlobal->minutos = minutoGlobal;
-
-    //=================================================================================
-    // Menu principal
-    do
-    {
-        printf("\n\n\t\t == MENU PRINCIPAL ==");
-        printf("\n\n\t 1. Cadastrar novo voo");
-        printf("\n\t 2. Autorizar pouso");
-        printf("\n\t 3. Imprimir lista de espera");
-        printf("\n\t 4. Imprimir lista de pouso");
-        printf("\n\t 0. Sair do programa");
-
-        printf("\n\n Escolha uma das opcoes acima: ");
-        scanf("%d", &input);
-
-        switch(input)
-        {
-            case 1:
-                CadastrarVoo(f, e, horarioGlobal);
-                break;
-
-            case 2:
-                AutorizarPouso(f, e, u, horarioGlobal);
-                break;
-
-            case 3:
-                system("cls");
-                printf("\n\n == FILA DE EMERGÊNCIA ==");
-                ImprimeFila(e, 0);
-                printf("\n\n == FILA PRINCIPAL ==");
-                ImprimeFila(f, 0);
-                break;
-
-            case 4:
-                ImprimeFila(u, 1);
-                break;
-
-            case 0:
-                printf("\n\n\t\t Encerrando programa...");
-                LiberaFila(f);
-                LiberaFila(e);
-                LiberaFila(u);
-                break;
-
-            default:
-                printf("\n\n\t\t ERRO: Comando invalido inserido...");
-                break;
-        }
-    } while (input != 0);
-
-
-    return 0;
-}
-
 void CadastrarVoo(Fila *f, Fila *e, Tempo *horarioGlobal)
 {
     // Dados do vôo
     char codigo[4];
     int numPass;
+
     Tempo *horario;
+
+    // Aloca espaço para armazenar os horários
+    horario = (Tempo*) malloc(sizeof(Tempo));
+    if(horario == NULL)
+    {
+        printf("\nERRO: Espaço de memória insuficiente...");
+        exit(1);
+    }
 
     // Variável auxiliar
     int aux;
@@ -118,7 +32,7 @@ void CadastrarVoo(Fila *f, Fila *e, Tempo *horarioGlobal)
 
     system("cls");
     printf("\n\t == CADASTRO DE VOOS ==");
-    printf("\n HORA ATUAL %d:%d", horarioGlobal->hora, horarioGlobal->minutos);
+    printf("\n HORA ATUAL %.2d:%.2d", horarioGlobal->hora, horarioGlobal->minutos);
 
     printf("\n\t\t Quantos voos deseja inserir: ");
     scanf("%d", &input);
@@ -140,8 +54,6 @@ void CadastrarVoo(Fila *f, Fila *e, Tempo *horarioGlobal)
             }
         }
 
-        horario = (Tempo*) malloc(sizeof(Tempo*));
-
         if(horario == NULL)       // Verifica se foi possível alocar memória para o horário
         {
             printf("\n\t\t ERRO: Falha ao alocar memoria para o horario do voo");
@@ -162,45 +74,235 @@ void CadastrarVoo(Fila *f, Fila *e, Tempo *horarioGlobal)
         {
             InsereFila(e, codigo, numPass, horario, -1);
         }
+
     }
+    free(horario);
 }
 
-void AutorizarPouso(Fila *f, Fila *e, Fila *u, Tempo *horarioGlobal)
+void AutorizarPouso(Fila *f, Fila *e, Fila *p, Tempo *horarioGlobal)
 {
     system("cls");
     Nos *aux = f->ini;
     Nos *aux2 = e->ini;
-    Nos *aux3;
 
-    // Imprime os próximos 3 vôos a serem autorizados
-    printf("\n HORA ATUAL %d:%d", horarioGlobal->hora, horarioGlobal->minutos);
-    printf("\n == PROXIMOS POUSOS ==");
-    for(int i = 0; i < 3; i++)
+    if(!VaziaFila(f) || !VaziaFila(e))
     {
-        // Verifica se há pousos de emergência
-        if(!VaziaFila(e)&& aux2 != NULL)
+        // Imprime os próximos 3 vôos a serem autorizados
+        printf("\n HORA ATUAL %.2d:%.2d", horarioGlobal->hora, horarioGlobal->minutos);
+        printf("\n == PROXIMOS POUSOS ==");
+
+        // Imprime os 3 próximos voos
+        for(int i = 0; i < 3; i++)
         {
-            ImprimeNo(aux2);
+            // Verifica se há pousos de emergência
+            if(!VaziaFila(e) && aux2 != NULL)
+            {
+                ImprimeNo(aux2);
+                aux2 = aux2->prox;
+
+            } else if(!VaziaFila(f) && aux != NULL)
+            {
+                ImprimeNo(aux);
+                aux = aux->prox;
+            }
+        }
+
+        // Autorizando pouso
+        if(!VaziaFila(e))
+        {
+            alteraHora(horarioGlobal, &f->ini);
+            InsereFila(p, e->ini->codigo, e->ini->numPass, e->ini->horario, e->ini->checkHora);
+            printf("\n\nRetirou voo de emergência: %.4s\n", e->ini->codigo);
+
+            RetiraFila(e);
+
+        } else if(!VaziaFila(f))
+        {
+            alteraHora(horarioGlobal, &f->ini);
+            InsereFila(p, f->ini->codigo, f->ini->numPass, f->ini->horario, f->ini->checkHora);
+            printf("\n\nRetirou voo: %.4s\n", f->ini->codigo);
+
+            RetiraFila(f);
+        }
+
+    } else
+    {
+        printf("\n\n\t ERRO: Nenhum voo registrado no sistema...");
+    }
+}
+
+void SimularPouso(Fila *f, Fila *e, Tempo *horarioGlobal)
+{
+    int minutos;      // tempo escolhido pelo usuário
+    Nos *aux = e->ini;
+    Nos *aux2 = f->ini;
+    Tempo *tempHora = (Tempo*) malloc(sizeof(Tempo));
+
+    Fila *temp = CriaFila();    // Fila de pousos temporários
+
+    tempHora->hora = horarioGlobal->hora;
+    tempHora->minutos = horarioGlobal->minutos;
+
+    printf("\n HORA ATUAL %.2d:%.2d", tempHora->hora, tempHora->minutos);
+    printf("\n == SIMULAÇÃO DE POUSOS ==");
+
+    // Inserção do tempo
+    do
+    {
+         printf("\n\n\t Insira um tempo, em minutos, para simular os pousos: ");
+        scanf("%d", &minutos);
+        
+    } while (minutos <= 0);
+
+    // Simulação dos pousos
+    while(minutos > 0)
+    {
+        if(!VaziaFila(e) && aux != NULL)
+        {
+            alteraHora(tempHora, &aux);
+            InsereFila(temp, aux->codigo, aux->numPass, aux->horario, aux->checkHora);
+            aux = aux->prox;
+
+        } else if(!VaziaFila(f) && aux2 != NULL)
+        {
+            alteraHora(tempHora, &aux2);
+            InsereFila(temp, aux2->codigo, aux2->numPass, aux2->horario, aux2->checkHora);
             aux2 = aux2->prox;
 
-        } else if(!VaziaFila(f) && aux != NULL)
+        }
+        minutos -= 10;
+    }
+
+    ImprimeFila(temp, 1);       // Imprime a simulação com o checkHora dos vôos
+    printf("\n NOVO HORÁRIO %.2d:%.2d", tempHora->hora, tempHora->minutos);
+    free(tempHora);
+    LiberaFila(temp);
+}
+
+void alteraHora(Tempo *horarioGlobal, Nos **voo)        // Altera o horário global e atualiza o checkHora
+{
+    // Altera o checkHora com base no horário atual
+    if((*voo)->checkHora != -1)
+    {
+        if(horarioGlobal->hora > (*voo)->horario->hora)
         {
-            ImprimeNo(aux);
-            aux = aux->prox;
+            (*voo)->checkHora = 0;
+
+        } else if(horarioGlobal->minutos > (*voo)->horario->minutos)
+        {
+            (*voo)->checkHora = 0;
         }
     }
 
-    // Autorizando pouso
-    if(!VaziaFila(e))
+    // Cada vôo leva 10 minutos para pousar
+    horarioGlobal->minutos += 10;
+    if(horarioGlobal->minutos >= 60)
     {
-        aux3 = RetiraFila(e);
+        horarioGlobal->hora += 1;
+        horarioGlobal->minutos -= 60;
+    }
+}
 
-    } else if(!VaziaFila(f))
+int main()
+{
+    system("cls");
+    setlocale(LC_ALL, "Portuguese");
+
+    // Input do usuário no menu;
+    int input = 0;
+
+    // Seed
+    int seed;
+
+    // Horário global
+    Tempo *horarioGlobal;
+    int horaGlobal, minutoGlobal;
+
+    //=================================================================================
+    // Filas principais
+    Fila *f = CriaFila();       // Fila principal de pouso
+    Fila *e = CriaFila();       // Fila de pousos de emergência
+    Fila *p = CriaFila();       // Fila de aviões que pousaram
+
+    //=================================================================================
+    // Inserção da seed
+    printf("\n\n\t INSIRA O VALOR DA SEED: ");
+    scanf("%d", &seed);
+    srand(seed);
+
+    //=================================================================================
+    // Inserção do horário global
+    horarioGlobal = (Tempo*) malloc(sizeof(Tempo));
+    horaGlobal = rand() % 24;
+    minutoGlobal = rand() % 60;
+
+    if(horarioGlobal == NULL)       // Verifica se foi possível alocar memória para o horário
     {
-        aux3 = RetiraFila(f);
+        printf("\n\t\t ERRO: Falha ao alocar memoria para o horario global");
+        exit(0);
     }
 
-    InsereFila(u, aux3->codigo, aux3->numPass, aux3->horario, aux3->checkHora);
-    free(aux3->horario);
-    free(aux3);
+    horarioGlobal->hora = horaGlobal;
+    horarioGlobal->minutos = minutoGlobal;
+
+    //=================================================================================
+    // Menu principal
+    do
+    {
+        printf("\n HORA ATUAL %.2d:%.2d", horarioGlobal->hora, horarioGlobal->minutos);
+        printf("\n\n == MENU PRINCIPAL ==");
+        printf("\n\n\t 1. Cadastrar novo voo");
+        printf("\n\t 2. Autorizar pouso");
+        printf("\n\t 3. Imprimir lista de espera");
+        printf("\n\t 4. Imprimir lista de pouso");
+        printf("\n\t 5. Simular pousos");
+        printf("\n\t 0. Sair do programa");
+
+        printf("\n\n Escolha uma das opcoes acima: ");
+        scanf("%d", &input);
+
+        switch(input)
+        {
+            case 1:
+                CadastrarVoo(f, e, horarioGlobal);
+                break;
+
+            case 2:
+                AutorizarPouso(f, e, p, horarioGlobal);
+                break;
+
+            case 3:
+                system("cls");
+                printf("\n\n == FILA DE EMERGÊNCIA ==");
+                ImprimeFila(e, 0);
+                printf("\n\n == FILA PRINCIPAL ==");
+                ImprimeFila(f, 0);
+                break;
+
+            case 4:
+                system("cls");
+                printf("\n HORA ATUAL %.2d:%.2d", horarioGlobal->hora, horarioGlobal->minutos);
+                ImprimeFila(p, 1);
+                break;
+
+            case 5:
+                system("cls");
+                SimularPouso(f, e, horarioGlobal);
+                break;
+
+            case 0:
+                printf("\n\n\t\t Encerrando programa...");
+                LiberaFila(f);
+                LiberaFila(e);
+                LiberaFila(p);
+                break;
+
+            default:
+                printf("\n\n\t\t ERRO: Comando invalido inserido...");
+                break;
+        }
+    } while (input != 0);
+
+
+    return 0;
 }
