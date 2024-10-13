@@ -7,11 +7,13 @@
 
     Fila *CriaFila()        ........................    Cria uma nova fila e a retorna
 
-    void InsereFila(Fila* f, char codigo[], int valor, Tempo* horario)  ........................    Insere os dados na fila
+    void InsereFila(Fila* f, char codigo[], int valor, Tempo* horario, int checkHora)  ........................    Insere os dados na fila
 
-    Nos *RetiraFila(Fila *f)    ........................    Retira o primeiro nó da fila e retorna
+    void RetiraFila(Fila *f)    ........................    Retira o primeiro nó da fila
 
-    void ImprimeFila(Fila* f, Fila *e, int status)   ........................    Imprime a fila completa, status define a impresão do checkHora
+    void ImprimeFila(Fila* f, int status)   ........................    Imprime a fila completa, status define a impressão do checkHora
+
+    void ImprimeNo(Nos *n)      ........................    Imprime um nó da fila
 
     Fila *LiberaFila(Fila* f)   ........................    Libera os espaços de memória alocados para a fila
 
